@@ -16,7 +16,7 @@
         </p>
         
         <div>
-            Version / Timestamp: 13<br>
+            Version / Timestamp: 14<br>
             <p>
                 <b>About</b>
                 This is a simple peer-to-peer chat which uses the PeerMessage
@@ -144,8 +144,9 @@
             /* show a chat history */
             function showTab(signed_by) {
                 const htmlChat = document.getElementById("chat");
+                const msgs = msgMap.get(signed_by);
+                    
                 if (activeTab === signed_by) {
-                    const msgs = msgMap.get(signed_by);
                     if (msgs.length > 0) {
                         htmlChat.innerHTML = createChatEntry(msgs[msgs.length - 1]) + htmlChat.innerHTML;
                     }
@@ -154,7 +155,6 @@
                     reloadContacts();
 
                     htmlChat.innerHTML = "";
-                    const msgs = msgMap.get(signed_by);
                     for (let i = msgs.length - 1; i >= 0; i--) {
                         htmlChat.innerHTML += createChatEntry(msgs[i]);
                     }
