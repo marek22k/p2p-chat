@@ -16,7 +16,7 @@
         </p>
         
         <div>
-            Version / Timestamp: 12<br>
+            Version / Timestamp: 13<br>
             <p>
                 <b>About</b>
                 This is a simple peer-to-peer chat which uses the PeerMessage
@@ -130,21 +130,34 @@
                 });
             }
             
+            function createChatEntry(message) {
+                let html = "<pre><i>" + (message.sender === "self" ? "You" : "Peer") + "</i>: ";
+                let chatMessage = htmlEncode(message.message);
+                if (chatMessage === "") {
+                    chatMessage = "<i>[empty message]</i>";
+                }
+                html += chatMessage + "</pre><br>\n";
+                
+                return html;
+            }
+            
             /* show a chat history */
             function showTab(signed_by) {
-                activeTab = signed_by;
-                reloadContacts();
-                
                 const htmlChat = document.getElementById("chat");
-                htmlChat.innerHTML = "";
-                const msgs = msgMap.get(signed_by);
-                for (let i = msgs.length - 1; i >= 0; i--) {
-                    htmlChat.innerHTML += "<pre><i>" + (msgs[i].sender === "self" ? "You" : "Peer") + "</i>: ";
-                    let chatMessage = htmlEncode(msgs[i].message);
-                    if (chatMessage === "") {
-                        chatMessage = "<i>[empty message]</i>";
+                if (activeTab === signed_by) {
+                    const msgs = msgMap.get(signed_by);
+                    if (msgs.length > 0) {
+                        htmlChat.innerHTML = createChatEntry(msgs[msgs.length - 1]) + htmlChat.innerHTML;
                     }
-                    htmlChat.innerHTML += "" + chatMessage + "</pre><br>\n";
+                } else {
+                    activeTab = signed_by;
+                    reloadContacts();
+
+                    htmlChat.innerHTML = "";
+                    const msgs = msgMap.get(signed_by);
+                    for (let i = msgs.length - 1; i >= 0; i--) {
+                        htmlChat.innerHTML += createChatEntry(msgs[i]);
+                    }
                 }
             }
             
