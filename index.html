@@ -77,13 +77,15 @@
                     } else if (msg.params.message.type === "message") {
                         /* to disguise the recipient, send the message even if it is for you */
                         zf.cmd("peerValid", [msg.params.hash]);
-                        zf.cmd("eciesDecrypt", [msg.params.message.value[0]], (decrypted) => {
-                            // console.log("Receive message", decrypted, "from", msg.params.cert);
-                            if (decrypted !== null && msgMap.has(msg.params.signed_by)) {
-                                /* when message can be decrypted and the contact it marked as friend */
-                                pushMessage(msg.params.signed_by, decrypted, "peer");
-                            }
-                        });
+                        if (msg.params.ip !== "self") {
+                            zf.cmd("eciesDecrypt", [msg.params.message.value[0]], (decrypted) => {
+                                // console.log("Receive message", decrypted, "from", msg.params.cert);
+                                if (decrypted !== null && msgMap.has(msg.params.signed_by)) {
+                                    /* when message can be decrypted and the contact it marked as friend */
+                                    pushMessage(msg.params.signed_by, decrypted, "peer");
+                                }
+                            });
+                        }
                     }
                 }
             };
