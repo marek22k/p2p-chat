@@ -16,7 +16,7 @@
         </p>
         
         <div>
-            Version / Timestamp: 11<br>
+            Version / Timestamp: 12<br>
             <p>
                 <b>About</b>
                 This is a simple peer-to-peer chat which uses the PeerMessage
@@ -76,6 +76,7 @@
                         zf.cmd("peerValid", [msg.params.hash]);
                     } else if (msg.params.message.type === "message") {
                         /* to disguise the recipient, send the message even if it is for you */
+                        /* and it enables multi-client support */
                         zf.cmd("peerValid", [msg.params.hash]);
                         if (msg.params.ip !== "self") {
                             zf.cmd("eciesDecrypt", [msg.params.message.value[0]], (decrypted) => {
@@ -83,6 +84,8 @@
                                 if (decrypted !== null && msgMap.has(msg.params.signed_by)) {
                                     /* when message can be decrypted and the contact it marked as friend */
                                     pushMessage(msg.params.signed_by, decrypted, "peer");
+                                    if (activeTab !== msg.params.signed_by)
+                                        zf.cmd("wrapperNotification", ["info", "New message from " + getNickname(keyMap.get(msg.params.signed_by)[0], msg.params.signed_by), 2500]);
                                 }
                             });
                         }

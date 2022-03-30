@@ -15,8 +15,8 @@
    "size": 7310
   },
   "index.html": {
-   "sha512": "b82529102fb9a20aa4989fb60b01f17af21e7a970bf7f646a61b18675592e986",
-   "size": 11543
+   "sha512": "87eb3d253ee770d5b26bf4436be7b4ae197b18144562c2a75854aaaa1e3cf838",
+   "size": 11866
   },
   "js/ZeroFrame.js": {
    "sha512": "76a24d167e8a4c45f7d1b315efe31e4b4ccb19efef011c080994c94045ff4c93",
@@ -29,10 +29,10 @@
  },
  "ignore": "",
  "inner_path": "content.json",
- "modified": 1648669235,
+ "modified": 1648670953,
  "postmessage_nonce_security": true,
  "signers_sign": "G98Sx9aW+hUg4x597r7WrhBxJr+Qx8eYhY1WeyE+GvLsSOd2ijQS2HaBh33eLFoJ4oo4LaYM0My9Wv5JRUA/ojo=",
- "signs": {"1KFeMjxZifD42WjwraFoftnsizWfq19QBx": "HEbreWsyQsSPc4K2Zpm2lQDacWrYntid+ulqpo4VvXFeWONQK2COc/qlg6ZbDwIepO9Gap1IQtlzt8P9KmIC0DE="},
+ "signs": {"1KFeMjxZifD42WjwraFoftnsizWfq19QBx": "G1OF6GRtE52OO+DcXD8k7wjeZRjGCvxLAmDdUVVo6zM/WEvOOpqZ0lu/0zkP0YYF14EQ9cEoxpQPLtdIzp9PRsQ="},
  "signs_required": 1,
  "title": "P2P chat",
  "viewport": "width=device-width, initial-scale=1.0",
