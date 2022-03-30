@@ -1,0 +1,69 @@
+@charset "UTF-8";
+
+/* base settings */
+html, body {
+    background-color: #262626;
+    color: white;
+}
+
+/* animation */
+@keyframes waitingDot {
+  0% { margin-left: 0px; }
+  50% { margin-left: 150px; }
+  100% { margin-left: 0px; }
+}
+
+.waitingDot {
+    animation-name: waitingDot;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    display: inline-block;
+    border-radius: 1000px;
+}
+
+/* contact list */
+
+#contactContainer {
+    margin: 5px;
+    padding: 0px;
+}
+
+#contactList {
+    margin: 0px;
+    margin-top: 10px;
+}
+
+#contactList li {
+    padding-bottom: 10px;
+}
+
+/* button */
+
+button {
+    background-color: #25257f;
+    color: white;
+    outline: none;
+    border: 3px solid black;
+    box-shadow: 5px 5px 5px black;
+}
+
+button:hover {
+    border-color: white;
+    box-shadow: 5px 5px 5px white;
+    background-color: #3a1254;
+}
+
+button:active {
+    border-color: black;
+    box-shadow: 5px 5px 5px black;
+}
+
+/* chat history */
+
+#chat pre {
+    display: inline;
+}

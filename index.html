@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>P2P chat</title>
+        <base href="" target="_top" id="base">
+        <script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, ""); </script>
+        
+        <link rel="stylesheet" href="css/layout.css">
+        <link rel="stylesheet" href="css/normalize.css">
+    </head>
+    <body>
+
+        <p>
+            <button onclick="login()">Login / Change certificate</button>
+        </p>
+        
+        <div>
+            Version / Timestamp: 11<br>
+            <p>
+                <b>About</b>
+                This is a simple peer-to-peer chat which uses the PeerMessage
+                plugin. After selecting a certificate, you will be displayed to
+                others. You can add them as a "friend". This means that you can
+                exchange messages with them. Adding as a friend is necessary on
+                both sides. Messages that are not from a friend will be discarded.
+                To disguise the recipient of a message, it will be forwarded even
+                if it is meant for you. The sender of a message can be identified
+                by the public key. The messages are encrypted using the
+                CryptMessage plugin and Ecies.
+            </p>
+        </div>
+        
+        <br>
+        <div id="contactContainer">
+            Contacts: <div class="waitingDot" id="waitingForContact"></div>
+            <ul id="contactList">
+                
+            </ul>
+        </div>
+        
+        <div id="chat_window">
+            <input type="text" id="chat_input" autocomplete="off"> <button onclick="sendChatMessage()" id="sendMessageButton">Send</button>
+            <div id="chat">
+                
+            </div>
+        </div>
+
+        <script type="text/javascript" src="js/ZeroFrame.js"></script>
+
+        <script>
+            const zf = new ZeroFrame();
+            const id_providers = ["cryptoid.bit", "kaffie.bit", "nobody", "zeropolska.bit"];
+            const keyMap = new Map();
+            const msgMap = new Map();
+            let announceIntervalId = 0;
+            let activeTab = null;
+            
+            zf.onRequest = (cmd, msg) => {
+                if (cmd === "peerReceive") {
+                    if (msg.params.cert === "" || msg.params.cert === undefined || msg.params.message === null) {
+                        /* throw message away when it's invalid */
+                        zf.cmd("peerInvalid", [msg.params.hash]);
+                    } else if (msg.params.message.type === "announceKey") {
+                        /* you get a key from another person */
+                        if (msg.params.ip !== "self" && ! keyMap.has(msg.params.signed_by)) {
+                            /* make the red ball blue for a second */
+                            const notifyElement = document.getElementById("waitingForContact");
+                            notifyElement.style.backgroundColor = "blue";
+                            setTimeout(() => { notifyElement.style.backgroundColor = "red"; }, 1000);
+                            
+                            /* add key and reload contact list */
+                            keyMap.set(msg.params.signed_by, [msg.params.cert, msg.params.message.value[0]]);
+                            reloadContacts();
+                        }
+                        zf.cmd("peerValid", [msg.params.hash]);
+                    } else if (msg.params.message.type === "message") {
+                        /* to disguise the recipient, send the message even if it is for you */
+                        zf.cmd("peerValid", [msg.params.hash]);
+                        zf.cmd("eciesDecrypt", [msg.params.message.value[0]], (decrypted) => {
+                            // console.log("Receive message", decrypted, "from", msg.params.cert);
+                            if (decrypted !== null && msgMap.has(msg.params.signed_by)) {
+                                /* when message can be decrypted and the contact it marked as friend */
+                                pushMessage(msg.params.signed_by, decrypted, "peer");
+                            }
+                        });
+                    }
+                }
+            };
+            
+            
+            zf.cmd("siteInfo", [], (info) => {
+                /* ask the user to select a cert when noone is selected */
+                if (info.cert_user_id === null) {
+                    login();
+                } else {
+                    reloadAnnounceInterval(info);
+                }
+            });
+    
+            /* register: send message on enter */
+            document.getElementById("chat_input").addEventListener("keyup", (event) => {
+              // Number 13 is the "Enter" key on the keyboard
+              if (event.keyCode === 13) {
+                event.preventDefault();
+                /* simulate click on button */
+                document.getElementById("sendMessageButton").click();
+              }
+            });
+    
+            /* activate / deactivate the announceKey Interval depend
+             * on when a cert if selected  */
+            function reloadAnnounceInterval(info) {
+                if (info.cert_user_id !== null) {
+                    announceIntervalId = window.setInterval(announceKey, 5000);
+                } else {
+                    clearInterval(announceIntervalId);
+                }
+            }
+            
+            /* encode html to prevent html/js injection */
+            function htmlEncode(str) {
+                return String(str).replace(/[^\w. ]/gi, (c) => {
+                    return '&#' + c.charCodeAt(0) + ';';
+                });
+            }
+            
+            /* show a chat history */
+            function showTab(signed_by) {
+                activeTab = signed_by;
+                reloadContacts();
+                
+                const htmlChat = document.getElementById("chat");
+                htmlChat.innerHTML = "";
+                const msgs = msgMap.get(signed_by);
+                for (let i = msgs.length - 1; i >= 0; i--) {
+                    htmlChat.innerHTML += "<pre><i>" + (msgs[i].sender === "self" ? "You" : "Peer") + "</i>: ";
+                    let chatMessage = htmlEncode(msgs[i].message);
+                    if (chatMessage === "") {
+                        chatMessage = "<i>[empty message]</i>";
+                    }
+                    htmlChat.innerHTML += "" + chatMessage + "</pre><br>\n";
+                }
+            }
+            
+            /* generate a more or less unique nickname */
+            function getNickname(cert, signed_by) {
+                let nick = cert.split("/");
+                /* in case the cert does not confirm the standard */
+                if (nick.length === 0 || nick.length > 2)
+                    nick = cert;
+                else
+                    nick = nick[1];
+                
+                return nick + '#' + signed_by.substring(1, 5);
+            }
+            
+            function addFriend(signed_by) {
+                if (! hasFriend(signed_by)) {
+                    msgMap.set(signed_by, []);
+                    reloadContacts();
+                }
+            }
+            
+            function pushMessage(friend, message, sender) {
+                msgMap.get(friend).push({ sender: sender, message: message });
+                if (activeTab === friend)
+                    showTab(friend);
+            }
+            
+            function hasFriend(signed_by) {
+                return msgMap.has(signed_by);
+            }
+            
+            function sendChatMessage() {
+                if (activeTab === null) {
+                    /* in case no contact is selected */
+                    zf.cmd("wrapperNotification", ["info", "Please select a contact to send a message."]);
+                } else {
+                    const inputHtml = document.getElementById("chat_input");
+                    if (inputHtml.value !== "") {
+                        /* do not send when the message it empty */
+                        sendMessage(activeTab, inputHtml.value);
+                        inputHtml.value = "";
+                    }
+                }
+            }
+            
+            function sendMessage(signed_by, input) {
+                let friend_info = keyMap.get(signed_by);
+                addFriend(signed_by);
+                pushMessage(signed_by, input, "self");
+                zf.cmd("eciesEncrypt", [input, friend_info[1]], (encrpyted) => {
+                    const msg = {
+                        type: "message",
+                        value: [encrpyted]
+                    };
+                    zf.cmd("peerBroadcast", [msg, false, 10], (sent) => {
+                        if (! sent.sent) {
+                            zf.cmd("wrapperNotification", ["error", "Error while send message: " + sent.sent]);
+                        }
+                    });
+                });
+            }
+            
+            function reloadContacts() {
+                const html_list = document.getElementById("contactList");
+                html_list.innerHTML = "";
+                keyMap.forEach((value, key, map) => {
+                    
+                    if (activeTab === key) {
+                        /* the contact is currectly selected */
+                        button = "(You see it already.)";
+                    } else if (hasFriend(key)) {
+                        /* the contact is a friend */
+                        let onclick = "showTab('" + htmlEncode(key) + "')";
+                        var button = "<button onclick=\"" + onclick + "\">" + "See it" + "</button>";
+                    } else {
+                        /* it is just a contact */
+                        let onclick = "addFriend('" + htmlEncode(key) + "')";
+                        var button = "<button onclick=\"" + onclick + "\">" + "Add as friend" + "</button>";
+                    }
+                    
+                    html_list.innerHTML += "<li>" + htmlEncode(getNickname(value[0], key)) + " " + button + "</li>" + "\n";
+                });
+            }
+            
+            function login() {
+                zf.cmd("certSelect", {accepted_domains: id_providers}, (ok) => {
+                    if (ok !== "ok") {
+                        zf.cmd("wrapperNotification", ["error", "Error while selecting the certificate: " + ok]);
+                    }
+                    zf.cmd("siteInfo", [], (info) => {
+                        reloadAnnounceInterval(info);
+                    });
+                });
+            }
+            
+            /* broadcast my key and nickname to other peers */
+            function announceKey() {
+                zf.cmd("userPublickey", [], (key) => {
+                    const msg = {
+                        type: "announceKey",
+                        value: [key]
+                    };
+                    zf.cmd("peerBroadcast", [msg, false, 10], (sent) => {
+                        if (! sent.sent) {
+                            zf.cmd("wrapperNotification", ["error", "Error while announce key: " + sent.sent]);
+                        }
+                        // else console.log("Announce key success");
+                    });
+                });
+            }
+            
+        </script>
+    </body>
+</html>

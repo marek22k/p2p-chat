@@ -1,0 +1,40 @@
+{
+ "address": "1KFeMjxZifD42WjwraFoftnsizWfq19QBx",
+ "address_index": 59469215,
+ "background-color": "#262626",
+ "cloneable": true,
+ "cloned_from": "1HELLoE3sFD9569CLCbHEAVqvqV7U2Ri9d",
+ "description": "A simple peer-to-peer chat that uses the PeerMessage plugin for communication and the CryptMessage plugin and Ecies for encryption.",
+ "files": {
+  "css/layout.css": {
+   "sha512": "fb48c46a74a009b88695c201fcd150ecdeb74022f101083c497846f74320bb52",
+   "size": 1088
+  },
+  "css/normalize.css": {
+   "sha512": "bf531687a3bb2f7df843c2ffd11e4c83d32dd9321c9f06257d5fef36fc0e67e8",
+   "size": 7310
+  },
+  "index.html": {
+   "sha512": "fdae9ca19ccf008c3268b08224368239ee7dda3580d7323e163aa708ffcdc0b0",
+   "size": 11433
+  },
+  "js/ZeroFrame.js": {
+   "sha512": "76a24d167e8a4c45f7d1b315efe31e4b4ccb19efef011c080994c94045ff4c93",
+   "size": 5088
+  },
+  "p2p.json": {
+   "sha512": "ead447428eb9affadb374ee56b529ed21bed67c5089e4db6128f79ce46708d74",
+   "size": 322
+  }
+ },
+ "ignore": "",
+ "inner_path": "content.json",
+ "modified": 1648668837,
+ "postmessage_nonce_security": true,
+ "signers_sign": "G98Sx9aW+hUg4x597r7WrhBxJr+Qx8eYhY1WeyE+GvLsSOd2ijQS2HaBh33eLFoJ4oo4LaYM0My9Wv5JRUA/ojo=",
+ "signs": {"1KFeMjxZifD42WjwraFoftnsizWfq19QBx": "G+7+WTzt7EiGhcf62hOA2iWpaS5tXhSW2S+rNjA4KJTqYSvfMKAfNgnPP5wqJXChEycE/Q4qY0qmjXdSvhiSrl4="},
+ "signs_required": 1,
+ "title": "P2P chat",
+ "viewport": "width=device-width, initial-scale=1.0",
+ "zeronet_version": "0.7.8"
+}
