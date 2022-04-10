@@ -3,7 +3,6 @@
  "address_index": 59469215,
  "background-color": "#262626",
  "cloneable": true,
- "cloned_from": "1HELLoE3sFD9569CLCbHEAVqvqV7U2Ri9d",
  "description": "A simple peer-to-peer chat that uses the PeerMessage plugin for communication and the CryptMessage plugin and Ecies for encryption.",
  "files": {
   "css/layout.css": {
@@ -29,12 +28,12 @@
  },
  "ignore": "",
  "inner_path": "content.json",
- "modified": 1648672616,
+ "modified": 1649611210,
  "postmessage_nonce_security": true,
  "signers_sign": "G98Sx9aW+hUg4x597r7WrhBxJr+Qx8eYhY1WeyE+GvLsSOd2ijQS2HaBh33eLFoJ4oo4LaYM0My9Wv5JRUA/ojo=",
- "signs": {"1KFeMjxZifD42WjwraFoftnsizWfq19QBx": "G94S4WeL6KicGuMNlWZRKFLu6hUWStGKNPLkl50C0DwIMK3Nnte8q+XklGTLN4P9C1stsASaWf76/LD1GqBFi+U="},
+ "signs": {"1KFeMjxZifD42WjwraFoftnsizWfq19QBx": "G0mdcjgPtQz+JOQ8ZA+Z+gv1hMkX/Pnmre3HpR8fPLbnHALw+jcGe5MCzH1+CJNPk7qYlheykT8ipMSD0gYIr1Q="},
  "signs_required": 1,
  "title": "P2P chat",
  "viewport": "width=device-width, initial-scale=1.0",
- "zeronet_version": "0.7.8"
+ "zeronet_version": "0.7.9"
 }
